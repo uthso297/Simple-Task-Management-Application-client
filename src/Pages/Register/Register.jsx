@@ -20,7 +20,7 @@ function Register() {
             const { displayName, email, photoURL, uid } = result.user;
             const newUser = { name: displayName, email, photo: photoURL, userId: uid };
 
-            const response = await fetch(`http://localhost:5000/user`, {
+            const response = await fetch(`https://task-management-server-ten-indol.vercel.app/user`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -65,7 +65,7 @@ function Register() {
                     updateUserProfile(name, photoLink)
                         .then(() => {
                             const newUser = { name: name, email: email, photo: photoLink, userId: uid }
-                            fetch(`http://localhost:5000/user`, {
+                            fetch(`https://task-management-server-ten-indol.vercel.app/user`, {
                                 method: 'POST',
                                 headers: {
                                     'Content-Type': 'application/json',

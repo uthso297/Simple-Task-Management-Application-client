@@ -38,7 +38,7 @@ function Login() {
             const { displayName, email, photoURL, uid } = result.user;
             const newUser = { name: displayName, email, photo: photoURL, userId: uid };
 
-            const response = await fetch(`http://localhost:5000/user`, {
+            const response = await fetch(`https://task-management-server-ten-indol.vercel.app/user`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
