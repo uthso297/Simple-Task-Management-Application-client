@@ -28,7 +28,7 @@ cd repo-name
 npm install  # or pip install -r requirements.txt, etc.
 
 # 4. Run the project
-npm start  # or any other relevant command
+npm run dev  # or any other relevant command
 ```
 
 ## 🛠️ Technologies Used  
