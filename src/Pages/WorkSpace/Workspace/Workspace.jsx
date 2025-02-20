@@ -1,6 +1,7 @@
 import { FaTasks } from 'react-icons/fa';
 import bg from '../../../assets/bg-task.jpg';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
+import { AuthContext } from '../../../Providers/AuthProvider';
 
 const Workspace = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -11,17 +12,19 @@ const Workspace = () => {
     const [currentTaskId, setCurrentTaskId] = useState(null);
     const [errorTittle, setErrorTittle] = useState('');
     const [errorDescription, setErrorDescription] = useState('');
-
+    const { user } = useContext(AuthContext)
+    const userEmail = user?.email
     useEffect(() => {
-        fetch('http://localhost:5000/task')
+        fetch(`http://localhost:5000/task?email=${userEmail}`)
             .then(res => res.json())
             .then(data => {
-                setTasks(data)
+                setTasks(data);
             })
             .catch(error => {
                 console.log(error);
-            })
-    }, [tasks])
+            });
+    }, [userEmail, tasks]);
+
 
     const handleOpenModal = () => {
         setIsModalOpen(true);
@@ -46,7 +49,7 @@ const Workspace = () => {
             return;
         }
 
-        const task = { title, description, category: 'To-Do' }
+        const task = { title, description, category: 'To-Do', email: userEmail }
         fetch('http://localhost:5000/task', {
             method: 'POST',
             headers: {
