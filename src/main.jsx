@@ -10,6 +10,7 @@ import Home from './Pages/Home/Home/Home';
 import Workspace from './Pages/WorkSpace/Workspace/Workspace';
 import Login from './Pages/Login/Login';
 import Register from './Pages/Register/Register';
+import AuthProvider from './Providers/AuthProvider';
 
 
 const router = createBrowserRouter([
@@ -39,6 +40,8 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <RouterProvider router={router} />
+    <AuthProvider>
+      <RouterProvider router={router} />
+    </AuthProvider>
   </StrictMode>,
 )

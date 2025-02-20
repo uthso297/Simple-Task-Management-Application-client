@@ -1,5 +1,8 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { FaGoogle } from "react-icons/fa";
+import { AuthContext } from "../../Providers/AuthProvider";
+import Swal from "sweetalert2";
+import { useNavigate } from "react-router-dom";
 
 function Register() {
     const [name, setName] = useState("");
@@ -7,6 +10,46 @@ function Register() {
     const [photoLink, setPhotoLink] = useState("");
     const [password, setPassword] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
+    const navigate = useNavigate()
+
+    const { handleGoogleLogin, createUser, updateUserProfile } = useContext(AuthContext) || {}
+
+    const googleLogin = async () => {
+        try {
+            const result = await handleGoogleLogin();
+            const { displayName, email, photoURL, uid } = result.user;
+            const newUser = { name: displayName, email, photo: photoURL, userId: uid };
+
+            const response = await fetch(`http://localhost:5000/user`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(newUser),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                console.log('Error:', errorData.message);
+            }
+
+            navigate('/workspace')
+            // success toast
+            await Swal.fire({
+                title: "Successfully Login",
+                icon: "success",
+                draggable: true,
+            });
+
+        } catch (error) {
+            await Swal.fire({
+                title: 'Oops!',
+                text: `There was an error during login. Please try again later.Error: ${error.message}`,
+                icon: 'error',
+            });
+        }
+    };
+
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -14,7 +57,31 @@ function Register() {
             setErrorMessage("Please fill out all fields.");
         } else {
             console.log("Registering with:", { name, email, photoLink, password });
-            setErrorMessage(""); 
+            setErrorMessage("");
+            createUser(email, password)
+                .then((result) => {
+                    console.log(result.user);
+                    const { uid } = result.user
+                    updateUserProfile(name, photoLink)
+                        .then(() => {
+                            const newUser = { name: name, email: email, photo: photoLink, userId: uid }
+                            fetch(`http://localhost:5000/user`, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify(newUser),
+                            })
+                                .then(() => {
+                                    navigate('/workspace')
+                                    Swal.fire({
+                                        title: "Successfully Registered",
+                                        icon: "success",
+                                        draggable: true,
+                                    });
+                                })
+                        })
+                })
         }
     };
 
@@ -98,7 +165,7 @@ function Register() {
                 </div>
 
                 {/* Google Login Button */}
-                <div className="mt-6 text-center flex items-center justify-center gap-3 border-2 border-green-700 rounded-lg px-4 py-2 cursor-pointer">
+                <div onClick={googleLogin} className="mt-6 text-center flex items-center justify-center gap-3 border-2 border-green-700 rounded-lg px-4 py-2 cursor-pointer">
                     <div>
                         <FaGoogle />
                     </div>

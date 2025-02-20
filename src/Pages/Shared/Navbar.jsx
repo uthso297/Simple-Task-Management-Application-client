@@ -1,13 +1,35 @@
 import { CiMenuFries } from "react-icons/ci";
-import { useState } from 'react';
-import { NavLink } from 'react-router-dom';
+import { useContext, useState, useEffect } from 'react';
+import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom';
+import { AuthContext } from "../../Providers/AuthProvider";
+import Swal from "sweetalert2";
+
 const Navbar = () => {
-    const [mobileMenu, setMobileMenu] = useState(false)
+    const [mobileMenu, setMobileMenu] = useState(false);
+    const { user, signOutUser } = useContext(AuthContext);
+    const navigate = useNavigate();
+    const location = useLocation();
+
+    const handleLogout = () => {
+        signOutUser()
+            .then(() => {
+                Swal.fire({
+                    title: "Successfully Logout",
+                    icon: "success",
+                    draggable: true,
+                });
+                navigate('/');
+            });
+    };
 
     const mobileOption = () => {
-        setMobileMenu(!mobileMenu)
-        console.log(mobileMenu);
-    }
+        setMobileMenu(!mobileMenu);
+    };
+
+    useEffect(() => {
+        setMobileMenu(false);
+    }, [location]);
+
     return (
         <>
             {/* tab and larger */}
@@ -22,21 +44,29 @@ const Navbar = () => {
                                 <NavLink to="/" className={({ isActive }) => (isActive ? 'font-bold' : '')}>
                                     <li className='text-[#9fabdc]'>Home</li>
                                 </NavLink>
-                                <NavLink to="/workspace" className={({ isActive }) => (isActive ? 'font-bold' : '')}>
-                                    <li className='text-[#9fabdc]'>Work Space</li>
-                                </NavLink>
-                                <NavLink to="/login" className={({ isActive }) => (isActive ? 'font-bold' : '')}>
-                                    <li className='text-[#9fabdc]'>Login</li>
-                                </NavLink>
-                                <NavLink to="/register" className={({ isActive }) => (isActive ? 'font-bold' : '')}>
-                                    <li className='text-[#9fabdc]'>Register</li>
-                                </NavLink>
+                                {
+                                    user ? <> <NavLink to="/workspace" className={({ isActive }) => (isActive ? 'font-bold' : '')}>
+                                        <li className='text-[#9fabdc]'>Work Space</li>
+                                    </NavLink></> : <Link to='/login'> <li className="text-[#9fabdc]">Work Space</li> </Link>
+                                }
+                                {
+                                    user ? (<>
+                                        <img className="w-8 h-8 rounded-full z-10 relative" src={user?.photoURL} alt="user" />
+                                        <button onClick={handleLogout} className="bg-[#9fabdc] px-3 py-2 rounded-lg cursor-pointer">Logout</button></>) : (
+                                        <>
+                                            <NavLink to="/login" className={({ isActive }) => (isActive ? 'font-bold' : '')}>
+                                                <li className='text-[#9fabdc]'>Login</li>
+                                            </NavLink>
+                                            <NavLink to="/register" className={({ isActive }) => (isActive ? 'font-bold' : '')}>
+                                                <li className='text-[#9fabdc]'>Register</li>
+                                            </NavLink>
+                                        </>
+                                    )
+                                }
                             </ul>
                         </div>
                     </div>
                     <div onClick={mobileOption} className='md:hidden text-white'>
-                        {/* <img className='h-10'  alt="" /> */}
-                        {/* src={menu} */}
                         <CiMenuFries />
                     </div>
                 </div>
@@ -50,18 +80,28 @@ const Navbar = () => {
                             <NavLink onClick={() => setMobileMenu(false)} to="/" className={({ isActive }) => (isActive ? 'font-bold' : '')}>
                                 <li className='text-[#9fabdc]'>Home</li>
                             </NavLink>
-                            <NavLink onClick={() => setMobileMenu(false)} to="/workspace" className={({ isActive }) => (isActive ? 'font-bold' : '')}>
-                                <li className='text-[#9fabdc]'>Work Space</li>
-                            </NavLink>
-                            <NavLink onClick={() => setMobileMenu(false)} to="/login" className={({ isActive }) => (isActive ? 'font-bold' : '')}>
-                                <li className='text-[#9fabdc]'>Login</li>
-                            </NavLink>
-                            <NavLink onClick={() => setMobileMenu(false)} to="/register" className={({ isActive }) => (isActive ? 'font-bold' : '')}>
-                                <li className='text-[#9fabdc]'>Register</li>
-                            </NavLink>
+                            {
+                                user ? <NavLink onClick={() => setMobileMenu(false)} to="/workspace" className={({ isActive }) => (isActive ? 'font-bold' : '')}>
+                                    <li className='text-[#9fabdc]'>Work Space</li>
+                                </NavLink> :
+                                    <Link to='/login'> <li className='text-[#9fabdc]'>Work Space</li> </Link>
+                            }
+                            {
+                                user ? <>
+                                    <img className="w-8 h-8 rounded-full z-10 relative" src={user?.photoURL} alt="user" />
+                                    <button onClick={handleLogout} className="bg-[#9fabdc] px-3 py-2 rounded-lg cursor-pointer">Logout</button>
+                                </> :
+                                    <>
+                                        <NavLink onClick={() => setMobileMenu(false)} to="/login" className={({ isActive }) => (isActive ? 'font-bold' : '')}>
+                                            <li className='text-[#9fabdc]'>Login</li>
+                                        </NavLink>
+                                        <NavLink onClick={() => setMobileMenu(false)} to="/register" className={({ isActive }) => (isActive ? 'font-bold' : '')}>
+                                            <li className='text-[#9fabdc]'>Register</li>
+                                        </NavLink>
+                                    </>
+                            }
                         </ul>
                     </div>
-
                 </>
             }
         </>
