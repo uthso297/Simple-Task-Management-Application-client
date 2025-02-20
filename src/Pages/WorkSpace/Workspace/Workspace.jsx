@@ -15,7 +15,7 @@ const Workspace = () => {
     const { user } = useContext(AuthContext)
     const userEmail = user?.email
     useEffect(() => {
-        fetch(`http://localhost:5000/task?email=${userEmail}`)
+        fetch(`https://task-management-server-ten-indol.vercel.app/task?email=${userEmail}`)
             .then(res => res.json())
             .then(data => {
                 setTasks(data);
@@ -50,7 +50,7 @@ const Workspace = () => {
         }
 
         const task = { title, description, category: 'To-Do', email: userEmail }
-        fetch('http://localhost:5000/task', {
+        fetch('https://task-management-server-ten-indol.vercel.app/task', {
             method: 'POST',
             headers: {
                 'content-type': 'application/json'
@@ -71,7 +71,7 @@ const Workspace = () => {
             return;
         }
         const updatedTask = { title, description };
-        fetch(`http://localhost:5000/task/${currentTaskId}`, {
+        fetch(`https://task-management-server-ten-indol.vercel.app/task/${currentTaskId}`, {
             method: 'PUT',
             headers: {
                 'content-type': 'application/json'
@@ -105,7 +105,7 @@ const Workspace = () => {
 
     const handleDelete = (id) => {
         // console.log('deleting', id);
-        fetch(`http://localhost:5000/task/${id}`, {
+        fetch(`https://task-management-server-ten-indol.vercel.app/task/${id}`, {
             method: 'DELETE',
         })
 
